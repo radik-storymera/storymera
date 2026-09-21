@@ -1,6 +1,6 @@
 # Storymera: first Docker Compose deployment
 
-This guide prepares an Ubuntu 24.04 VPS without exposing MySQL or the API directly. The Compose web port is bound to `127.0.0.1:8080`; a separately managed HTTPS reverse proxy can publish it later.
+This guide prepares an Ubuntu 24.04 VPS without exposing MySQL or the API directly. The Compose web port is bound to `127.0.0.1:8080`; a separately managed HTTPS reverse proxy can publish it later. Compose uses two networks: `edge` lets Docker activate that loopback host binding for `web`, while the isolated `internal` network connects `web` to `api` and connects `api`/`migrate` to `db`.
 
 ## Prerequisites
 
@@ -71,7 +71,7 @@ docker compose --env-file deploy/.env.production up -d api web
 docker compose --env-file deploy/.env.production ps
 ```
 
-Only `127.0.0.1:8080` is published. `api:3001` and `db:3306` exist only on the internal Compose network.
+Only `127.0.0.1:8080` is published through the non-internal `edge` network. `web` also joins `internal` so nginx can reach `api:3001` by service name. `api`, `migrate`, and `db` join only `internal`; API and MySQL have no published host ports.
 
 ## 6. Health and smoke checks
 
