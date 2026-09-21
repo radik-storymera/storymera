@@ -1,0 +1,63 @@
+CREATE TABLE polls (
+ id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ admin_title VARCHAR(200) NOT NULL,
+ question VARCHAR(500) NOT NULL,
+ description TEXT NOT NULL,
+ type ENUM('opinion','canonical') NOT NULL,
+ status ENUM('draft','active','closed','implemented','archived') NOT NULL DEFAULT 'draft',
+ allow_skip BOOLEAN NOT NULL DEFAULT TRUE,
+ show_results BOOLEAN NOT NULL DEFAULT FALSE,
+ allow_vote_change BOOLEAN NOT NULL DEFAULT FALSE,
+ open_at DATETIME(3) NULL,
+ close_at DATETIME(3) NULL,
+ canonical_option_id BIGINT UNSIGNED NULL,
+ official_total INT UNSIGNED NULL,
+ closed_at DATETIME(3) NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+);
+CREATE TABLE poll_options (
+ id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ poll_id BIGINT UNSIGNED NOT NULL,
+ text VARCHAR(500) NOT NULL,
+ description TEXT NOT NULL,
+ sort_order INT NOT NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+ FOREIGN KEY (poll_id) REFERENCES polls(id),
+ INDEX poll_option_order (poll_id,sort_order,id)
+);
+ALTER TABLE polls ADD CONSTRAINT poll_canonical_option_fk FOREIGN KEY (canonical_option_id) REFERENCES poll_options(id);
+CREATE TABLE poll_votes (
+ id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ poll_id BIGINT UNSIGNED NOT NULL,
+ option_id BIGINT UNSIGNED NOT NULL,
+ user_id CHAR(36) NOT NULL,
+ change_count INT UNSIGNED NOT NULL DEFAULT 0,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+ UNIQUE KEY poll_user_vote (poll_id,user_id),
+ FOREIGN KEY (poll_id) REFERENCES polls(id),
+ FOREIGN KEY (option_id) REFERENCES poll_options(id),
+ FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE poll_views (
+ id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ poll_id BIGINT UNSIGNED NOT NULL,
+ user_id CHAR(36) NULL,
+ guest_id CHAR(36) NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ FOREIGN KEY (poll_id) REFERENCES polls(id),
+ FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+ FOREIGN KEY (guest_id) REFERENCES guest_sessions(id) ON DELETE SET NULL,
+ INDEX poll_view_poll (poll_id)
+);
+CREATE TABLE poll_result_snapshots (
+ poll_id BIGINT UNSIGNED NOT NULL,
+ option_id BIGINT UNSIGNED NOT NULL,
+ vote_count INT UNSIGNED NOT NULL,
+ percent DECIMAL(6,2) NOT NULL,
+ PRIMARY KEY (poll_id,option_id),
+ FOREIGN KEY (poll_id) REFERENCES polls(id),
+ FOREIGN KEY (option_id) REFERENCES poll_options(id)
+);

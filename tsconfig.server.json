@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext", "strict": true, "esModuleInterop": true, "skipLibCheck": true, "outDir": "server-dist", "rootDir": ".", "rewriteRelativeImportExtensions": true },
+  "include": ["server/**/*.ts", "src/story.ts", "src/progress.ts"]
+}

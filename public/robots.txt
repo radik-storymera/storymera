@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /billing
+Disallow: /api/
+
+Sitemap: https://storymera.com/sitemap.xml

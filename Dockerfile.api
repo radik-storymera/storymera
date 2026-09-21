@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1.7
+
+FROM node:24-bookworm-slim AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY tsconfig.server.json ./
+COPY server ./server
+COPY src ./src
+RUN npm run build:server
+
+FROM node:24-bookworm-slim AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+COPY --from=build /app/server-dist ./server-dist
+COPY migrations ./migrations
+RUN mkdir -p /app/.local/media /app/.local/media-trash \
+    && chown -R node:node /app/.local
+USER node
+EXPOSE 3001
+CMD ["npm", "start"]

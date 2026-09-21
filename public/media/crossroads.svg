@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="760" viewBox="0 0 720 760">
+<rect width="720" height="760" fill="#eae4d9"/><circle cx="511" cy="205" r="110" fill="#f8f2df"/>
+<path d="M0 434L97 383 197 423 319 361 423 407 562 337 720 420V760H0Z" fill="#d5d5c4"/>
+<path d="M50 470V237h138v233M210 470V167h133v303M374 470V281h153v189M562 470V218h105v252" fill="#c6b6a3"/>
+<g fill="#ece5d7"><path d="M74 267h27v46H74zM134 267h27v46h-27zM74 338h27v46H74zM134 338h27v46h-27zM238 206h29v47h-29zM289 206h29v47h-29zM238 282h29v47h-29zM289 282h29v47h-29zM400 313h28v44h-28zM468 313h28v44h-28zM588 249h27v45h-27zM631 249h20v45h-20z"/></g>
+<path d="M0 487Q350 427 720 493V760H0Z" fill="#d8cabb"/><path d="M381 476L242 760H541L438 476Z" fill="#f0e7d9"/>
+<path d="M82 495V399M636 493V380" stroke="#7d8876" stroke-width="9"/><ellipse cx="82" cy="375" rx="51" ry="74" fill="#a5ae94"/><ellipse cx="636" cy="367" rx="45" ry="71" fill="#a5ae94"/>
+<ellipse cx="349" cy="669" rx="72" ry="12" fill="#bba998" opacity=".4"/><path d="M323 568L319 658h22l16-85 13 85h22l-9-90" fill="#636b61"/>
+<path d="M311 487Q345 464 379 487L396 584H298Z" fill="#ba715b"/><circle cx="346" cy="450" r="29" fill="#d2a182"/>
+<path d="M317 459Q302 405 345 404Q388 410 376 474L362 461 361 433Q334 440 320 431Z" fill="#615449"/>
+<path d="M312 490L292 562M380 490L405 546" stroke="#ba715b" stroke-width="17" stroke-linecap="round"/>
+<rect x="406" y="554" width="49" height="80" rx="8" fill="#a68d70"/><path d="M417 553v-15h23v15" fill="none" stroke="#786b57" stroke-width="4"/>
+<text x="360" y="711" text-anchor="middle" fill="#655d51" font-family="Georgia,serif" font-size="24">Which way today?</text>
+<text x="360" y="738" text-anchor="middle" fill="#7c7366" font-family="Arial,sans-serif" font-size="10" letter-spacing="3">STORYMERA · MEDIA PLACEHOLDER</text></svg>
