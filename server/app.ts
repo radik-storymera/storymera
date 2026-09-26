@@ -14,6 +14,7 @@ import {readerPollRouter} from './polls.ts';
 import {recordEvent} from './analytics.ts';
 import {billingRouter} from './billing.ts';
 import path from 'node:path';
+import {linkSourceRegistration,sourceLinkRouter,sourceTrackingRouter} from './source-analytics.ts';
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 const cookieName = 'jessica_session';
@@ -23,6 +24,7 @@ export function createApp(pool: Pool, origin: string, production = false) {
  app.disable('x-powered-by');
  if(production)app.set('trust proxy',1);
  app.use(helmet()); app.use(express.json({limit:'1mb'})); app.use(cookieParser());
+ app.use(sourceLinkRouter(pool));
  app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  const cookie = { httpOnly:true, secure:production, sameSite:'lax' as const, path:'/api' };
  const csrfSecret=randomBytes(32);
@@ -70,6 +72,7 @@ export function createApp(pool: Pool, origin: string, production = false) {
   const id=randomUUID();
    try {const c=await pool.getConnection();try{await c.beginTransaction();await c.execute('INSERT INTO users(id,email,password_hash) VALUES(?,?,?)',[id,data.email,passwordHash]);const moved=await transferGuest(c,req,id);await recordEvent(c,'registration_completed',{userId:id,guestId:moved.guestId},{source:'guest-registration'});await c.commit();}catch(e){await c.rollback();throw e;}finally{c.release();}}
   catch(e){if((e as {code?:string}).code==='ER_DUP_ENTRY'){res.status(409).json({error:'Unable to register with these details. Try signing in.'});return;}throw e;}
+  void linkSourceRegistration(pool,req,id);
   await issue(req,res,id,data.email);
  });
  const dummyHash=argon2.hash(randomBytes(32),{type:argon2.argon2id,memoryCost:19456,timeCost:2,parallelism:1});
@@ -83,6 +86,7 @@ export function createApp(pool: Pool, origin: string, production = false) {
  app.get('/api/auth/me',async(req,res)=>{res.json({user:await session(req)});});
  app.post('/api/auth/logout',async(req,res)=>{const token=req.cookies[cookieName];if(typeof token==='string')await pool.execute('DELETE FROM sessions WHERE token_hash=?',[hash(token)]);res.clearCookie(cookieName,cookie);res.json({ok:true});});
  app.use('/api/admin',async(req,res,next)=>{const user=await session(req);if(!user||user.role!=='admin'){res.status(user?403:401).json({error:'Administrator access required.'});return;}res.locals.user=user;next();},adminRouter(pool));
+ app.use('/api/tracking',sourceTrackingRouter(pool,session));
  app.use('/api/billing',billingRouter(pool,session));
  app.use('/api/polls',readerPollRouter(pool,session));
  app.use('/api/reading',readingRouter(pool,session,production));

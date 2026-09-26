@@ -2,6 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import {api} from './api';
 import type {CatalogItem,Story} from './story-model';
 import type {ReadingState} from './reading-model';
+import {trackSourceEvent} from './sourceTracking';
 
 type User={id:string;email:string;role?:string;keyBalance?:number|null};
 const legacyKey='jessica-stories:chapter:first-day';
@@ -64,10 +65,10 @@ export function useReader(items:CatalogItem[]){
   setStatus('Your place is saved on the server.');
  });}
  async function finish(){if(!current||current.mode!=='active')return;setBusy(true);
-  try{const result:{state:ReadingState}=await api('/reading/finish','POST',{chapterId:current.chapterId});update(result.state);setStory(null);location.hash='next/'+encodeURIComponent(current.heroineId);setStatus('Chapter completed and saved.');}
+  try{const result:{state:ReadingState}=await api('/reading/finish','POST',{chapterId:current.chapterId});update(result.state);void trackSourceEvent('chapter_completed',{heroineId:current.heroineId,chapterId:current.chapterId});setStory(null);location.hash='next/'+encodeURIComponent(current.heroineId);setStatus('Chapter completed and saved.');}
   catch{
    try{const result=await api('/reading/state');setStates(result.stories);
-    if(result.stories[current.heroineId]?.mode==='awaiting'||result.stories[current.heroineId]?.mode==='complete'){setStory(null);location.hash='next/'+encodeURIComponent(current.heroineId);setStatus('Chapter completion was confirmed by the server.');}
+    if(result.stories[current.heroineId]?.mode==='awaiting'||result.stories[current.heroineId]?.mode==='complete'){void trackSourceEvent('chapter_completed',{heroineId:current.heroineId,chapterId:current.chapterId});setStory(null);location.hash='next/'+encodeURIComponent(current.heroineId);setStatus('Chapter completion was confirmed by the server.');}
     else setStatus('Completion was not confirmed. You can retry Finish chapter.');
    }catch{setStatus('Server unavailable. Completion is unconfirmed; retry safely.');}
   }finally{setBusy(false);}

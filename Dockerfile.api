@@ -16,6 +16,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/server-dist ./server-dist
 COPY migrations ./migrations
+COPY analytics-migrations ./analytics-migrations
 RUN mkdir -p /app/.local/media /app/.local/media-trash \
     && chown -R node:node /app/.local
 USER node

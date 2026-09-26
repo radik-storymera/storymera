@@ -14,6 +14,7 @@ import {inspectMedia,moveMediaToTrash,restoreMedia} from './media-management.ts'
 import {adminPollRouter,pollErrors} from './polls.ts';
 import {adminBillingRouter} from './billing.ts';
 import {adminUsersRouter} from './users.ts';
+import {adminSourceAnalyticsRouter} from './source-analytics.ts';
 const validId=(x:unknown):x is string=>typeof x==='string'&&/^[a-z0-9][a-z0-9-]{0,63}$/.test(x);
 const text=(x:unknown,n:number)=>typeof x==='string'&&x.trim().length>0&&x.length<=n;
 export const mediaRoot=path.resolve('.local/media');
@@ -49,6 +50,7 @@ export function adminRouter(pool:Pool){
  router.use('/polls',adminPollRouter(pool));
  router.use('/billing',adminBillingRouter(pool));
  router.use('/users',adminUsersRouter(pool));
+ router.use('/source-analytics',adminSourceAnalyticsRouter(pool));
  // Mutations that can add or remove media references share one database lock across API processes.
  router.use(async(req,res,next)=>{
   const protectedMutation=(req.method==='POST'&&req.path==='/heroines')||(req.method==='PUT'&&req.path.startsWith('/heroines/'))||

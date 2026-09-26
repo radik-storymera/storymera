@@ -6,6 +6,6 @@ export default defineConfig(({mode})=>{
  return {
   define:{__PUBLIC_SITE_URL__:JSON.stringify(env.PUBLIC_SITE_URL??'')},
   plugins:[{name:'storymera-public-url',transformIndexHtml:html=>html.replaceAll('{{PUBLIC_SITE_URL}}',publicUrl)}],
-  server:{host:'localhost',proxy:{'/api':'http://127.0.0.1:'+(process.env.JESSICA_API_PORT??'3001')},fs:{deny:['.env','.env.*','**/.local/**','**/.runtime/**','**/server/**','**/migrations/**']}},
+  server:{host:'localhost',proxy:{'/api':'http://127.0.0.1:'+(process.env.JESSICA_API_PORT??'3001'),'/go':'http://127.0.0.1:'+(process.env.JESSICA_API_PORT??'3001')},fs:{deny:['.env','.env.*','**/.local/**','**/.runtime/**','**/server/**','**/migrations/**']}},
  };
 });

@@ -12,6 +12,7 @@ import type {ReadingState} from './reading-model';
 import {HomePage,InfoPage,PageMeta,SiteFooter,type HomeData} from './PublicSite';
 import {BillingPage} from './BillingPage';
 import {BRAND_LOGO,SITE_NAME} from './siteConfig';
+import {confirmSourceVisit,trackSourceEvent} from './sourceTracking';
 import './style.css';
 
 function actionLabel(state?:ReadingState){
@@ -43,6 +44,7 @@ function App({items,home}:{items:CatalogItem[];home:HomeData}){
  const nextHero=hash.startsWith('#next/')?decodeURIComponent(hash.slice(6)):null;
  const nextState=nextHero?reader.states[nextHero]:undefined;
  const player=hash.startsWith('#story/')&&reader.story&&reader.current?.mode==='active';
+ useEffect(()=>{if(!player||!reader.story||!reader.current?.progress?.sceneId)return;const context={heroineId:reader.current.heroineId,chapterId:reader.current.chapterId,sceneId:reader.current.progress.sceneId};void trackSourceEvent('scene_reached',context);if(context.sceneId===reader.story.chapter.firstScene)void trackSourceEvent('reading_started',context);},[player,reader.story,reader.current?.progress?.sceneId]);
  const showNext=nextHero&&nextState&&nextState.mode!=='active';
  const retry=reader.status.includes('unavailable')||reader.status.includes('unconfirmed')||reader.status.includes('Retry');
  const requestRegistration=()=>setRegisterSignal(value=>value+1);
@@ -67,6 +69,7 @@ function App({items,home}:{items:CatalogItem[];home:HomeData}){
 const root=createRoot(document.getElementById('root')!);
 async function bootstrap(){
  if(location.pathname.startsWith('/admin')){root.render(<AdminErrorBoundary><Admin/></AdminErrorBoundary>);return;}
+ void confirmSourceVisit();
  try{const [items,home]:[CatalogItem[],HomeData]=await Promise.all([api('/content/catalog'),api('/content/home')]);if(!items.length&&location.pathname!=='/billing'){root.render(<main><h1>Storymera</h1><p>No published stories yet.</p><a href="/admin">Content studio</a></main>);return;}root.render(<App items={items} home={home}/>);}
  catch{root.render(<main><h1>Storymera</h1><p>Stories are temporarily unavailable. Saved progress has not been changed.</p><button onClick={()=>void bootstrap()}>Retry</button></main>);}
 }

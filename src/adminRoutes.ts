@@ -3,10 +3,10 @@ export type AdminRoute =
  | {kind:'chapters';heroId:string} | {kind:'chapter-new';heroId:string}
  | {kind:'chapter-edit'|'scenes';heroId:string;chapterId:string}
  | {kind:'scene-edit';heroId:string;chapterId:string;sceneId:string}
- | {kind:'media'} | {kind:'billing-stats'} | {kind:'users'} | {kind:'user-detail';userId:string} | {kind:'polls'} | {kind:'poll-new'} | {kind:'poll-edit'|'poll-stats';pollId:number} | {kind:'invalid'};
+ | {kind:'media'} | {kind:'billing-stats'} | {kind:'source-analytics'} | {kind:'users'} | {kind:'user-detail';userId:string} | {kind:'polls'} | {kind:'poll-new'} | {kind:'poll-edit'|'poll-stats';pollId:number} | {kind:'invalid'};
 
 export const paths={
- stories:'/admin/stories',media:'/admin/media',billingStats:'/admin/billing-statistics',users:'/admin/users',userDetail:(id:string)=>`/admin/users/${encodeURIComponent(id)}`,polls:'/admin/polls',pollNew:'/admin/polls/new',pollEdit:(id:number)=>`/admin/polls/${id}/edit`,pollStats:(id:number)=>`/admin/polls/${id}/stats`,storyNew:'/admin/stories/new',
+ stories:'/admin/stories',media:'/admin/media',billingStats:'/admin/billing-statistics',sourceAnalytics:'/admin/source-analytics',users:'/admin/users',userDetail:(id:string)=>`/admin/users/${encodeURIComponent(id)}`,polls:'/admin/polls',pollNew:'/admin/polls/new',pollEdit:(id:number)=>`/admin/polls/${id}/edit`,pollStats:(id:number)=>`/admin/polls/${id}/stats`,storyNew:'/admin/stories/new',
  storyEdit:(h:string)=>`/admin/stories/${encodeURIComponent(h)}/edit`,
  chapters:(h:string)=>`/admin/stories/${encodeURIComponent(h)}/chapters`,
  chapterNew:(h:string)=>`${paths.chapters(h)}/new`,
@@ -19,6 +19,7 @@ export function parseAdminRoute(pathname:string):AdminRoute {
   if(pathname==='/admin'||pathname===paths.stories)return {kind:'stories'};
   if(pathname===paths.media)return {kind:'media'};
   if(pathname===paths.billingStats)return {kind:'billing-stats'};
+  if(pathname===paths.sourceAnalytics)return {kind:'source-analytics'};
   if(pathname===paths.users)return {kind:'users'};
   if(pathname===paths.polls)return {kind:'polls'};
   if(pathname===paths.pollNew)return {kind:'poll-new'};

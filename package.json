@@ -12,6 +12,7 @@
     "server": "node --experimental-strip-types server/index.ts",
     "build:server": "tsc -p tsconfig.server.json",
     "db:migrate": "node --experimental-strip-types server/migrate.ts",
+    "db:migrate:source-analytics": "node --experimental-strip-types server/migrate-source-analytics.ts",
     "test:api": "node --experimental-strip-types --test tests/api.test.ts",
     "db:start": "node server/mysql-local.mjs start",
     "db:stop": "node server/mysql-local.mjs stop",
@@ -28,6 +29,7 @@
     "test:access": "node --experimental-strip-types --test tests/guest-access-keys.test.ts",
     "test:billing": "node --experimental-strip-types --test tests/billing-plans.test.ts",
     "test:admin-users": "node --experimental-strip-types --test tests/admin-users.test.ts",
+    "test:source-analytics": "node --experimental-strip-types --test tests/source-analytics.test.ts",
     "content:linearize": "node --experimental-strip-types server/migrate-linear-content.ts",
     "progress:reset-test-users": "node --experimental-strip-types server/reset-registered-progress.ts",
     "data:cleanup-test": "node --experimental-strip-types server/cleanup-test-data.ts"

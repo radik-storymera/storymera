@@ -11,6 +11,16 @@ This guide prepares an Ubuntu 24.04 VPS without exposing MySQL or the API direct
 
 Do not copy `.env`, `.local/mysql-data`, `.runtime`, `node_modules`, local logs, or private keys to the source checkout on the VPS.
 
+## Production SSH access
+
+From the authorized Windows workstation, connect as the non-root deployment user with the existing `id_ed25519` key:
+
+```powershell
+ssh -p 22 -i "$HOME\.ssh\id_ed25519" -o IdentitiesOnly=yes deploy@188.93.118.33
+```
+
+The production checkout is `/opt/storymera`. Root SSH login and password authentication remain disabled. The private key stays in the local SSH directory and must never be copied into this repository.
+
 ## 1. Create the production environment file
 
 From the project directory on the VPS:
@@ -126,6 +136,16 @@ docker compose --env-file deploy/.env.production ps
 ```
 
 Run migrations before replacing the API only after reviewing the new migration for backward compatibility.
+
+For the source-and-behavior analytics release, apply only its isolated migration:
+
+```bash
+docker compose --env-file deploy/.env.production --profile tools run --rm migrate-source-analytics
+```
+
+This service executes `001_source_behavior_analytics.sql` only. It creates the separate analytics tables and does not run unrelated migrations. See `SOURCE-ANALYTICS.md` for data semantics, manual checks and the collection switch.
+
+Set `PUBLIC_SITE_URL` in `deploy/.env.production` to the externally visible site origin, for example `https://storymera.com`. Analytics uses this value for every displayed and copied `/go/` link; do not set it to the internal `api` service address.
 
 ## 10. Rollback
 

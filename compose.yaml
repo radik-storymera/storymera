@@ -14,6 +14,7 @@ x-api-environment: &api-environment
   DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
   MEDIA_IMAGE_MB: ${MEDIA_IMAGE_MB:-12}
   MEDIA_VIDEO_MB: ${MEDIA_VIDEO_MB:-200}
+  SOURCE_ANALYTICS_ENABLED: ${SOURCE_ANALYTICS_ENABLED:-true}
 
 services:
   db:
@@ -47,6 +48,28 @@ services:
     restart: "no"
     environment: *api-environment
     command: ["node", "server-dist/server/migrate.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  migrate-source-analytics:
+    image: storymera-api:${STORYMERA_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    profiles: ["tools"]
+    restart: "no"
+    environment: *api-environment
+    command: ["node", "server-dist/server/migrate-source-analytics.js"]
     depends_on:
       db:
         condition: service_healthy
